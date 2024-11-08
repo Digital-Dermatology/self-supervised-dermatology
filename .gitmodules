@@ -1,0 +1,6 @@
+[submodule "ssl_library"]
+	path = ssl_library
+	url = https://github.com/mse-thesis-dermatology/ssl_library
+[submodule "models"]
+	path = models
+	url = https://github.com/vm02-self-supervised-dermatology/self-supervised-models

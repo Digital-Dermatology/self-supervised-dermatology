@@ -1,0 +1,110 @@
+version: "3.2"
+services:
+    run_tests:
+        extends:
+            file: docker-compose.base.yml
+            service: "app_${BUILD_ENV-prod}"
+        build: .
+        working_dir: /workspace
+        command: bash -c "python -m pytest --ignore=ssl_library/"
+        environment:
+            WANDB_MODE: offline
+
+    train_simclr:
+        extends:
+            file: docker-compose.base.yml
+            service: "app_${BUILD_ENV-prod}"
+        build: .
+        command: bash -c "python -m src.train_simclr --config_path $$CONFIG_PATH"
+        environment:
+            CONFIG_PATH: arguments/simclr.yaml
+
+    train_byol:
+        extends:
+            file: docker-compose.base.yml
+            service: "app_${BUILD_ENV-prod}"
+        build: .
+        command: bash -c "python -m src.train_byol --config_path $$CONFIG_PATH"
+        environment:
+            CONFIG_PATH: arguments/byol.yaml
+
+    train_colorme:
+        extends:
+            file: docker-compose.base.yml
+            service: "app_${BUILD_ENV-prod}"
+        build: .
+        command: bash -c "python -m src.train_colorme --config_path $$CONFIG_PATH"
+        environment:
+            CONFIG_PATH: arguments/colorme.yaml
+
+    train_dino:
+        extends:
+            file: docker-compose.base.yml
+            service: "app_${BUILD_ENV-prod}"
+        build: .
+        command: bash -c "python -m src.train_dino --config_path $$CONFIG_PATH"
+        environment:
+            CONFIG_PATH: arguments/dino.yaml
+
+    train_ibot:
+        extends:
+            file: docker-compose.base.yml
+            service: "app_${BUILD_ENV-prod}"
+        build: .
+        command: bash -c "python -m src.train_ibot --config_path $$CONFIG_PATH"
+        environment:
+            CONFIG_PATH: arguments/ibot.yaml
+
+    eval_imagenet:
+        extends:
+            file: docker-compose.base.yml
+            service: "app_${BUILD_ENV-prod}"
+        build: .
+        command: bash -c "python -m src.eval_downstream --config_path $$CONFIG_PATH"
+        environment:
+            CONFIG_PATH: arguments/eval/eval_imagenet.yaml
+
+    eval_simclr:
+        extends:
+            file: docker-compose.base.yml
+            service: "app_${BUILD_ENV-prod}"
+        build: .
+        command: bash -c "python -m src.eval_downstream --config_path $$CONFIG_PATH"
+        environment:
+            CONFIG_PATH: arguments/eval/eval_simclr.yaml
+
+    eval_byol:
+        extends:
+            file: docker-compose.base.yml
+            service: "app_${BUILD_ENV-prod}"
+        build: .
+        command: bash -c "python -m src.eval_downstream --config_path $$CONFIG_PATH"
+        environment:
+            CONFIG_PATH: arguments/eval/eval_byol.yaml
+
+    eval_dino:
+        extends:
+            file: docker-compose.base.yml
+            service: "app_${BUILD_ENV-prod}"
+        build: .
+        command: bash -c "python -m src.eval_downstream --config_path $$CONFIG_PATH"
+        environment:
+            CONFIG_PATH: arguments/eval/eval_dino.yaml
+
+    eval_ibot:
+        extends:
+            file: docker-compose.base.yml
+            service: "app_${BUILD_ENV-prod}"
+        build: .
+        command: bash -c "python -m src.eval_downstream --config_path $$CONFIG_PATH"
+        environment:
+            CONFIG_PATH: arguments/eval/eval_ibot.yaml
+
+    eval_colorme:
+        extends:
+            file: docker-compose.base.yml
+            service: "app_${BUILD_ENV-prod}"
+        build: .
+        command: bash -c "python -m src.eval_downstream --config_path $$CONFIG_PATH"
+        environment:
+            CONFIG_PATH: arguments/eval/eval_colorme.yaml

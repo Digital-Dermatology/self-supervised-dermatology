@@ -1,0 +1,60 @@
+batch_size: 8
+epochs: 1
+optim: "sgd"
+lr: 0.001
+min_lr: 1e-6
+weight_decay: 1e-6
+weight_decay_end: 0.4
+warmup_epochs: 0
+clip_grad: 3.0
+use_lr_scheduler: False
+use_wd_scheduler: False
+
+seed: 42
+fine_tune_from: None
+
+save_every_n_epochs: 1
+downstream_every_n_epochs: 1
+downstream_train_epochs: 1
+embed_vis_every_n_epochs: 1
+visualize_attention: True
+visualize_reconstruction: True
+imgs_to_visualize: 5
+
+decryption: !include default/decryption.yaml
+
+model:
+    emb_dim: 25088
+    out_dim: 256
+    base_model: "resnet18"
+    model_type: "UNET"
+
+dataset:
+    train_path: "data/ssl-data/train/"
+    val_path: "data/ssl-data/val/"
+    loader:
+        num_workers: 10
+        drop_last: True
+        pin_memory: True
+    val_loader:
+        num_workers: 10
+        drop_last: True
+        pin_memory: True
+        shuffle: False
+    wrapper:
+        target_shape: (224,224,3)
+        debug: False
+
+loss:
+    weight_mse: 10.0
+    weight_kld: 1.0
+
+downstream:
+    lr: 0.0001
+    pu_path: "data/PAD-UFES-20/"
+    ham_path: "data/HAM10000/"
+    fitz_path: "data/fitzpatrick17k/"
+    isic_path: "data/ISIC_Task1/"
+    splitter:
+        num_workers: 10
+        val_size: 0.30

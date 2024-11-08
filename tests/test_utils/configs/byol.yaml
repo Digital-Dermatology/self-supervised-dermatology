@@ -1,0 +1,64 @@
+batch_size: 8 # paper default: 4096
+epochs: 1 # paper default: 1'000
+optim: "lars" # paper default: lars
+lr: 0.03
+min_lr: 1e-6
+weight_decay: 1.5*10e-6
+warmup_epochs: 0
+momentum_base: 0.996 # paper default: 0.996
+clip_grad: 3.0
+use_lr_scheduler: True
+use_wd_scheduler: False
+
+seed: 42
+fine_tune_from: None
+
+save_every_n_epochs: 1
+downstream_every_n_epochs: 1
+downstream_train_epochs: 1
+embed_vis_every_n_epochs: 1
+visualize_attention: True
+imgs_to_visualize: 5
+
+decryption: !include default/decryption.yaml
+
+model:
+    emb_dim: 512 # paper default: 4096
+    out_dim: 256 # paper default: 256
+    base_model: "resnet18" # paper default: resnet50
+    model_type: "CNN"
+    byol:
+        projection_hidden_size: 4096
+        projection_size: 256
+
+dataset:
+    train_path: "data/ssl-data/train/"
+    val_path: "data/ssl-data/val/"
+    loader:
+        num_workers: 10
+        drop_last: True
+        pin_memory: True
+    val_loader:
+        num_workers: 10
+        drop_last: True
+        pin_memory: True
+        shuffle: False
+    augmentations:
+        target_size: 224
+        gaussian_kernel: 23
+        scaling: 0.5
+        two_augmentations: True
+
+loss:
+    temperature: 0.5
+    use_cosine_similarity: True
+
+downstream:
+    lr: 0.05
+    pu_path: "data/PAD-UFES-20/"
+    ham_path: "data/HAM10000/"
+    fitz_path: "data/fitzpatrick17k/"
+    isic_path: "data/ISIC_Task1/"
+    splitter:
+        num_workers: 10
+        val_size: 0.30

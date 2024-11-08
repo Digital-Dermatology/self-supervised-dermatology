@@ -1,0 +1,76 @@
+batch_size: 8
+epochs: 1
+optim: "adamw"
+lr: 0.0005
+min_lr: 1e-6
+weight_decay: 0.04
+weight_decay_end: 0.4
+warmup_epochs: 0
+momentum_teacher: 0.9995
+clip_grad: 3.0
+use_lr_scheduler: True
+use_wd_scheduler: True
+
+seed: 42
+fine_tune_from: None
+
+save_every_n_epochs: 5
+downstream_every_n_epochs: 20
+downstream_train_epochs: 10
+embed_vis_every_n_epochs: 10
+visualize_attention: True
+imgs_to_visualize: 5
+
+decryption: !include default/decryption.yaml
+
+model:
+    out_dim: 4096
+    emb_dim: 384 # tiny: 192, small: 384, base: 768
+    base_model: "vit_small"
+    model_type: "VIT"
+    use_bn_in_head: False
+    norm_last_layer: False
+    student:
+        patch_size: 16
+        drop_path_rate: 0.1
+    teacher:
+        drop_path_rate: 0.1
+    eval:
+        n_last_blocks: 4
+        avgpool_patchtokens: False
+
+dataset:
+    train_path: "data/ssl-data/train/"
+    val_path: "data/ssl-data/val/"
+    loader:
+        num_workers: 10
+        drop_last: True
+        pin_memory: True
+    val_loader:
+        num_workers: 10
+        drop_last: True
+        pin_memory: True
+        shuffle: False
+    augmentations:
+        global_crops_scale: (0.4, 1.)
+        local_crops_scale: (0.05, 0.4)
+        global_crops_number: 2
+        local_crops_number: 8
+
+loss:
+    warmup_teacher_temp: 0.04
+    teacher_temp: 0.04
+    warmup_teacher_temp_epochs: 0
+
+optimizer:
+    freeze_last_layer: 1
+
+downstream:
+    lr: 0.001
+    pu_path: "data/PAD-UFES-20/"
+    ham_path: "data/HAM10000/"
+    fitz_path: "data/fitzpatrick17k/"
+    isic_path: "data/ISIC_Task1/"
+    splitter:
+        num_workers: 10
+        val_size: 0.30

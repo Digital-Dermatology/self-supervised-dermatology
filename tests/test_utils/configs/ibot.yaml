@@ -1,0 +1,93 @@
+batch_size: 8
+epochs: 1
+optim: "adamw"
+lr: 0.0005
+min_lr: 1e-6
+weight_decay: 0.04
+weight_decay_end: 0.4
+warmup_epochs: 0
+clip_grad: 3.0
+momentum_teacher: 0.9995
+use_lr_scheduler: True
+use_wd_scheduler: True
+
+seed: 42
+fine_tune_from: None
+
+save_every_n_epochs: 5
+downstream_every_n_epochs: 20
+downstream_train_epochs: 10
+embed_vis_every_n_epochs: 10
+visualize_attention: True
+imgs_to_visualize: 5
+
+decryption: !include default/decryption.yaml
+
+model:
+    out_dim: 4096
+    emb_dim: 384 # tiny: 192, small: 384, base: 768
+    patch_out_dim: 4096
+    base_model: "vit_small"
+    model_type: "VIT"
+    use_bn_in_head: False
+    norm_last_layer: False
+    shared_head: False
+    shared_head_teacher: True
+    student:
+        patch_size: 16
+        drop_path_rate: 0.1
+        return_all_tokens: True
+        masked_im_modeling: True
+    teacher:
+        patch_size: 16
+        drop_path_rate: 0.1
+        return_all_tokens: True
+    eval:
+        n_last_blocks: 4
+        avgpool_patchtokens: False
+
+dataset:
+    train_path: "data/ssl-data/train/"
+    val_path: "data/ssl-data/val/"
+    loader:
+        num_workers: 10
+        drop_last: True
+        pin_memory: True
+    val_loader:
+        num_workers: 10
+        drop_last: True
+        pin_memory: True
+        shuffle: False
+    augmentations:
+        global_crops_scale: (0.14, 1.)
+        local_crops_scale: (0.05, 0.4)
+        global_crops_number: 2
+        local_crops_number: 8
+    MIM:
+        pred_ratio: 0.3
+        pred_ratio_var: 0.0
+        pred_aspect_ratio: (0.3, 1/0.3)
+        pred_shape: "block"
+        pred_start_epoch: 0
+
+loss:
+    warmup_teacher_temp: 0.04
+    teacher_temp: 0.04
+    warmup_teacher_patch_temp: 0.04
+    teacher_patch_temp: 0.07
+    warmup_teacher_temp_epochs: 0
+    lambda1: 1.0
+    lambda2: 1.0
+
+optimizer:
+    freeze_last_layer: 2
+
+downstream:
+    lr: 0.001
+    pu_path: "data/PAD-UFES-20/"
+    ham_path: "data/HAM10000/"
+    fitz_path: "data/fitzpatrick17k/"
+    isic_path: "data/ISIC_Task1/"
+    splitter:
+        num_workers: 10
+        val_size: 0.30

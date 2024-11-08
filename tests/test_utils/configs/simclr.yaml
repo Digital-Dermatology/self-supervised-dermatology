@@ -1,0 +1,60 @@
+batch_size: 8
+epochs: 1
+optim: "adam"
+lr: 0.001
+min_lr: 1e-6
+weight_decay: 1e-6
+weight_decay_end: 0.4
+warmup_epochs: 0
+clip_grad: 3.0
+use_lr_scheduler: True
+use_wd_scheduler: True
+
+seed: 42
+fine_tune_from: None
+
+save_every_n_epochs: 1
+downstream_every_n_epochs: 1
+downstream_train_epochs: 1
+embed_vis_every_n_epochs: 1
+visualize_attention: True
+imgs_to_visualize: 5
+
+decryption: !include default/decryption.yaml
+
+model:
+    emb_dim: 512
+    out_dim: 128
+    base_model: "resnet18"
+    model_type: "CNN"
+
+dataset:
+    train_path: "data/ssl-data/train/"
+    val_path: "data/ssl-data/val/"
+    loader:
+        num_workers: 10
+        drop_last: True
+        pin_memory: True
+    val_loader:
+        num_workers: 10
+        drop_last: True
+        pin_memory: True
+        shuffle: False
+    augmentations:
+        target_size: 224
+        gaussian_kernel: 23
+        scaling: 1
+
+loss:
+    temperature: 0.5
+    use_cosine_similarity: True
+
+downstream:
+    lr: 0.001
+    pu_path: "data/PAD-UFES-20/"
+    ham_path: "data/HAM10000/"
+    fitz_path: "data/fitzpatrick17k/"
+    isic_path: "data/ISIC_Task1/"
+    splitter:
+        num_workers: 10
+        val_size: 0.30
